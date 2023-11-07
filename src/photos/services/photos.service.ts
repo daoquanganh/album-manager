@@ -3,8 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PhotoInfoDto } from 'src/common/dtos/photos/photo-info.dto';
 import { Photo } from 'src/entities/photo.entity';
 import { User } from 'src/entities/user.entity';
-import { Repository } from 'typeorm';
+import { MoreThan, MoreThanOrEqual, Raw, Repository } from 'typeorm';
 import * as fs from 'fs';
+import { QueryDto } from 'src/common/dtos/photos/query.dto';
 
 @Injectable()
 export class PhotosService {
@@ -56,13 +57,20 @@ export class PhotosService {
         } else { throw new HttpException('Photo not found', HttpStatus.BAD_REQUEST) }
     }
 
-    async pagination(page: number) {
-        return await this.photoRepo.find({
+    async pagination(page: number, query: QueryDto) {
+        const order = query.order || 'ASC'
+        const filter = query.filter || 'createdAt'
+        const minLike = query.minLike || 0
+        const photos = await this.photoRepo.find({
             skip: 10*(page-1),
-            take: 10
+            take: 10,
+            order: {
+                [filter]: order === 'DESC' ? 'DESC' : 'ASC',
+            },
+            where: {
+                like: MoreThanOrEqual(minLike)
+            }
         })
-
+        return photos
     }
-
-
 }

@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Put, ParseIntPipe, Req, HttpException, HttpStatus, UseInterceptors, UploadedFile, ParseFilePipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Put, ParseIntPipe, Req, HttpException, HttpStatus, UseInterceptors, UploadedFile, ParseFilePipe, Query } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PhotosService } from '../services/photos.service';
 import { AuthGuard } from 'src/auth/guards/local-auth.guard';
 import { PhotoInfoDto } from 'src/common/dtos/photos/photo-info.dto';
+import { QueryDto } from 'src/common/dtos/photos/query.dto';
 
 @Controller('photos')
 export class PhotosController {
@@ -32,7 +33,7 @@ export class PhotosController {
     }
 
     @Get('page/:page')
-    async pagination(@Param('page', ParseIntPipe) page: number) {
-        return await this.photosService.pagination(page)
+    async pagination(@Param('page', ParseIntPipe) page: number, @Query() query: QueryDto) {
+        return await this.photosService.pagination(page, query)
     }
 }
