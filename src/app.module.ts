@@ -8,6 +8,10 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { MySQLConfigService } from './config/mysql.config';
 import { PhotosModule } from './photos/photos.module';
+import { AlbumsController } from './albums/controllers/albums.controller';
+import { AlbumsService } from './albums/services/albums.service';
+import { AlbumsModule } from './albums/albums.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -23,8 +27,10 @@ import { PhotosModule } from './photos/photos.module';
     UsersModule,
     AuthModule,
     PhotosModule,
+    AlbumsModule,
+    JwtModule
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, AlbumsController],
+  providers: [AppService, AlbumsService],
 })
 export class AppModule {}

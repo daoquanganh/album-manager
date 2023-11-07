@@ -20,7 +20,6 @@ export class PhotosService {
                 photos: true
             }
         })
-        console
         if (!user) throw new HttpException('Cant extract user from token', HttpStatus.BAD_REQUEST)
         const photoInfo = await this.photoRepo.save({...data, link})
         user.photos.push(photoInfo)
@@ -39,7 +38,7 @@ export class PhotosService {
             photo.description = data.description
             photo.status = data.status
             return await this.photoRepo.save(photo)
-        } else { throw new HttpException('User not found', HttpStatus.BAD_REQUEST) }
+        } else { throw new HttpException('Photo not found', HttpStatus.BAD_REQUEST) }
     }
     
     async deletePhoto(id: string) {

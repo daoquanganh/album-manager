@@ -12,6 +12,7 @@ export class PhotosController {
     @UseGuards(AuthGuard)
     @UseInterceptors(FileInterceptor('file'))
     async uploadFile(@Req() req: any, @UploadedFile() file: Express.Multer.File, @Body() data: PhotoInfoDto) {
+        console.log(data)
         return await this.photosService.create(req.user.data.id, file.path, data)
     }
 
