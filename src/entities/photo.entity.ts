@@ -1,9 +1,10 @@
-import { Column, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { BaseEntity } from "src/common/entities/base.entity";
 import { User } from "./user.entity";
 import { MediaStatus } from "src/common/types/enum.type";
 import { Album } from "./album.entity";
 import { IsNotEmpty } from "class-validator";
+import { Comment } from "./comment.entity";
 @Entity()
 export class Photo extends BaseEntity<MediaStatus> {
 
@@ -33,5 +34,8 @@ export class Photo extends BaseEntity<MediaStatus> {
 
     @ManyToOne(() => Album, (album) => album.photos)
     album: Album
+
+    @OneToMany(() => Comment, (comment) => comment.photo)
+    comments: Comment[]
 
 }
