@@ -54,6 +54,15 @@ export class PhotosService {
             photo.owner.id = null
             return await this.photoRepo.remove(photo)
         } else { throw new HttpException('Photo not found', HttpStatus.BAD_REQUEST) }
+    }
+
+    async pagination(page: number) {
+        return await this.photoRepo.find({
+            skip: 10*(page-1),
+            take: 10
+        })
 
     }
+
+
 }

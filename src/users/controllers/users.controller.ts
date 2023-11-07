@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Put, ParseIntPipe, Req, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Put, ParseIntPipe, Req, HttpException, HttpStatus, BadRequestException } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import { CreateUserDto } from '../../common/dtos/users/create-user.dto';
 import { UpdateUserDto } from '../../common/dtos/users/update-user.dto';
@@ -40,7 +40,7 @@ export class UsersController {
   @Post('follow')
   async followUser(@Req() req:any, @Body() followingId: string ) {
     const followerId = req.user.data.id
-    if (!followerId) throw new HttpException('Cant extract userId from token', HttpStatus.BAD_REQUEST)
+    if (!followerId) throw new BadRequestException('Cant extract userId from token')
     return await this.usersService.follow(followerId, followingId)
   }
 
@@ -48,7 +48,7 @@ export class UsersController {
   @Post('like')
   async likePhoto(@Req() req:any, @Body() data: {photoId: string} ) {
     const userId = req.user.data.id
-    if (!userId) throw new HttpException('Cant extract userId from token', HttpStatus.BAD_REQUEST)
+    if (!userId) throw new BadRequestException('Cant extract userId from token')
     return await this.usersService.likePhoto(userId, data.photoId)
   }
 
@@ -56,7 +56,7 @@ export class UsersController {
   @Get('newsfeed')
   async getNewsfeed(@Req() req:any) {
     const userId = req.user.data.id
-    if (!userId) throw new HttpException('Cant extract userId from token', HttpStatus.BAD_REQUEST)
+    if (!userId) throw new BadRequestException('Cant extract userId from token')
     return await this.usersService.getNewsfeed(userId)
   }
 
