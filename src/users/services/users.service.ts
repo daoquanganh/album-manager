@@ -7,12 +7,15 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt'
 import { ForgetPasswordDto } from 'src/common/dtos/users/forget-password.dto';
 import { Photo } from 'src/entities/photo.entity';
+import { Comment } from 'src/entities/comment.entity';
+import { CommentDto } from 'src/common/dtos/users/comment.dto';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private userRepo: Repository<User>,
-    @InjectRepository(Photo) private photoRepo: Repository<Photo>
+    @InjectRepository(Photo) private photoRepo: Repository<Photo>,
+    @InjectRepository(Comment) private commentRepo: Repository<Comment>
   ) {}
   async create(data: CreateUserDto)  {
     return await this.userRepo.save(data)
@@ -114,7 +117,7 @@ export class UsersService {
     })
     return data
   }
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async comment(data: CommentDto) {
+    return await this.commentRepo.save(data)
   }
 }

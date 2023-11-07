@@ -41,7 +41,7 @@ export class User extends BaseEntity<UserStatus> {
     status: UserStatus
 
     @ManyToMany(() => Album)
-    @JoinColumn({'name': 'followers', 'referencedColumnName': 'followerId'})
+    @JoinTable()
     albums: Album[]
 
     @OneToMany(() => Photo, (photo) => photo.owner)

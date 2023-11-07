@@ -3,8 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PhotoInfoDto } from 'src/common/dtos/photos/photo-info.dto';
 import { Photo } from 'src/entities/photo.entity';
 import { User } from 'src/entities/user.entity';
-import { Repository } from 'typeorm';
+import { MoreThan, MoreThanOrEqual, Raw, Repository } from 'typeorm';
 import * as fs from 'fs';
+import { QueryDto } from 'src/common/dtos/photos/query.dto';
 
 @Injectable()
 export class PhotosService {
@@ -20,7 +21,6 @@ export class PhotosService {
                 photos: true
             }
         })
-        console
         if (!user) throw new HttpException('Cant extract user from token', HttpStatus.BAD_REQUEST)
         const photoInfo = await this.photoRepo.save({...data, link})
         user.photos.push(photoInfo)
@@ -29,7 +29,7 @@ export class PhotosService {
     }
 
     findAll() {
-        return this.photoRepo.find()
+        return this.photoRepo.find({relations: {comments:true}})
     }
 
     async updatePhoto(id: string, data: PhotoInfoDto) {
@@ -39,7 +39,7 @@ export class PhotosService {
             photo.description = data.description
             photo.status = data.status
             return await this.photoRepo.save(photo)
-        } else { throw new HttpException('User not found', HttpStatus.BAD_REQUEST) }
+        } else { throw new HttpException('Photo not found', HttpStatus.BAD_REQUEST) }
     }
     
     async deletePhoto(id: string) {
@@ -55,6 +55,22 @@ export class PhotosService {
             photo.owner.id = null
             return await this.photoRepo.remove(photo)
         } else { throw new HttpException('Photo not found', HttpStatus.BAD_REQUEST) }
+    }
 
+    async pagination(page: number, query: QueryDto) {
+        const order = query.order || 'ASC'
+        const filter = query.filter || 'createdAt'
+        const minLike = query.minLike || 0
+        const photos = await this.photoRepo.find({
+            skip: 10*(page-1),
+            take: 10,
+            order: {
+                [filter]: order === 'DESC' ? 'DESC' : 'ASC',
+            },
+            where: {
+                like: MoreThanOrEqual(minLike)
+            }
+        })
+        return photos
     }
 }

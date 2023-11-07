@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { MulterModuleOptions, MulterOptionsFactory } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
-import path, { extname } from "path";
+import * as path from "path";
 
 @Injectable()
 export class MulterConfigService implements MulterOptionsFactory {
@@ -14,13 +14,13 @@ export class MulterConfigService implements MulterOptionsFactory {
                 if (file.mimetype.match(/\/(jpg|jpeg|png)$/)) {
                     cb(null, true);
                 } else {
-                    cb(new HttpException(`Unsupported file type ${extname(file.originalname)}`, HttpStatus.BAD_REQUEST), false);
+                    cb(new HttpException(`Unsupported file type ${path.extname(file.originalname)}`, HttpStatus.BAD_REQUEST), false);
                 }
             },
             storage: diskStorage({
                 destination: './uploads',
                 filename: (req, file, cb) => {
-                    cb(null, Date.now() + extname(file.originalname))
+                    cb(null, Date.now() + path.extname(file.originalname))
                 }
             }),
         };
