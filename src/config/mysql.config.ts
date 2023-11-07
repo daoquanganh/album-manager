@@ -3,7 +3,6 @@ import { ConfigService } from "@nestjs/config";
 import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from "@nestjs/typeorm";
 import { Album } from "src/entities/album.entity";
 import { Comment } from "src/entities/comment.entity";
-import { Follower } from "src/entities/follower.entity";
 import { Photo } from "src/entities/photo.entity";
 import { User } from "src/entities/user.entity";
 
@@ -20,7 +19,7 @@ export class MySQLConfigService implements TypeOrmOptionsFactory {
             username: this.configService.get<string>('DATABASE_USERNAME'),
             password: this.configService.get<string>('DATABASE_PASSWORD'),
             database: this.configService.get<string>('DATABASE_NAME'),
-            entities: [User, Album, Photo, Comment, Follower],
+            entities: [User, Album, Photo, Comment],
             synchronize: true,
         }    
     }

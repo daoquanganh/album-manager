@@ -10,16 +10,15 @@ import { ForgetPasswordDto } from 'src/common/dtos/users/forget-password.dto';
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User) private userRepo: Repository<User>
+    @InjectRepository(User) private userRepo: Repository<User>,
   ) {}
   async create(data: CreateUserDto)  {
     return await this.userRepo.save(data)
   }
 
-  findAll() {
-    return this.userRepo.find();
+  async findAll() {
+    return await this.userRepo.find({relations:{followers:true,followings:true, photos:true}});
   }
-
 
   async findOneByUsername(userName: string): Promise<User | undefined> {
     return await this.userRepo.findOne({where: {userName}})
@@ -29,7 +28,7 @@ export class UsersService {
     return await this.userRepo.findOne({where: {email}})
   }
 
-  async findOneById(id: number): Promise<User | undefined> {
+  async findOneById(id: string): Promise<User | undefined> {
     return await this.userRepo.findOne({where: {id}})
   }
 
@@ -45,7 +44,7 @@ export class UsersService {
       return await this.userRepo.save(user)
     }
   }
-  async updateStatus(id: number) {
+  async updateStatus(id: string) {
     let user = await this.userRepo.findOneBy({id})
     if (user) {
       user.status = 'verified'
@@ -53,7 +52,7 @@ export class UsersService {
       return await this.userRepo.save(user)
     } else { throw new HttpException('User not found', HttpStatus.BAD_REQUEST)}
   }
-  async updateUser(id: number, data: UpdateUserDto) {
+  async updateUser(id: string, data: UpdateUserDto) {
     let user = await this.userRepo.findOneBy({id})
     if (user) {
       user.name = data.name
@@ -63,6 +62,17 @@ export class UsersService {
     } else { throw new HttpException('User not found', HttpStatus.BAD_REQUEST) }
   }
 
+  async follow(followerId: string, followingId: string) {
+    let follower = await this.userRepo.findOne({
+      where: {id:followerId}, 
+      relations: {
+        followings:true
+      }})
+    let following = await this.findOneById(followingId)
+    if (!following) throw new HttpException('Following user not found', HttpStatus.BAD_REQUEST)
+    follower.followings.push(following)
+    return this.userRepo.save(follower)
+  }
   remove(id: number) {
     return `This action removes a #${id} user`;
   }

@@ -5,13 +5,12 @@ import { Photo } from "./photo.entity";
 import { Comment } from "./comment.entity"
 import { UserStatus } from "src/common/types/enum.type";
 import { IsEmail, IsNotEmpty } from "class-validator";
-import { Follower } from "./follower.entity";
 
 @Entity()
 export class User extends BaseEntity<UserStatus> {
 
     @PrimaryGeneratedColumn('uuid')
-    id: number
+    id: string
 
     @IsNotEmpty()
     @Column()
@@ -42,7 +41,7 @@ export class User extends BaseEntity<UserStatus> {
     status: UserStatus
 
     @ManyToMany(() => Album)
-    @JoinTable()
+    @JoinColumn({'name': 'followers', 'referencedColumnName': 'followerId'})
     albums: Album[]
 
     @OneToMany(() => Photo, (photo) => photo.user)
@@ -51,9 +50,19 @@ export class User extends BaseEntity<UserStatus> {
     @OneToMany(() => Comment, (comment) => comment.user)
     comments: Comment[]
 
-    @OneToMany(() => Follower, follows => follows.following)
-    followers: Follower[];
-    
-    @OneToMany(() => Follower, follows => follows.follower)
-    followings: Follower[];
+    @ManyToMany(() => User, (user) => user.followings)
+    @JoinTable({
+        'name': 'followers', 
+        'joinColumn':{
+            name: 'follower',
+            referencedColumnName: 'id'
+        },
+        'inverseJoinColumn': {
+            name: 'following',
+            referencedColumnName: 'id'
+        }})
+    followers: User[];
+
+    @ManyToMany(() => User, (user) => user.followers)
+    followings: User[];
 }

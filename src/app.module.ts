@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { MySQLConfigService } from './config/mysql.config';
+import { PhotosModule } from './photos/photos.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { MySQLConfigService } from './config/mysql.config';
     CommonModule,
     UsersModule,
     AuthModule,
+    PhotosModule,
   ],
   controllers: [AppController],
   providers: [AppService],
