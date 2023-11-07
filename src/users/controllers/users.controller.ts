@@ -60,8 +60,11 @@ export class UsersController {
     return await this.usersService.getNewsfeed(userId)
   }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.usersService.remove(+id);
-  // }
+  @UseGuards(AuthGuard)
+  @Post('comment')
+  async comment(@Req() req:any, @Body() data: {content: string, photoId: string}) {
+    const userId = req.user.data.id
+    if (!userId) throw new BadRequestException('Cant extract userId from token')
+    return await this.usersService.comment({userId, ...data})
+  }
 }

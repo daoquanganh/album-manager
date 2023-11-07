@@ -28,7 +28,7 @@ export class PhotosService {
     }
 
     findAll() {
-        return this.photoRepo.find()
+        return this.photoRepo.find({relations: {comments:true}})
     }
 
     async updatePhoto(id: string, data: PhotoInfoDto) {

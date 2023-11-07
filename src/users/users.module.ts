@@ -5,10 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { Photo } from 'src/entities/photo.entity';
-import { Album } from 'src/entities/album.entity';
+import { Comment } from 'src/entities/comment.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Photo, Album]), JwtModule],
+  imports: [TypeOrmModule.forFeature([User, Photo, Comment]), JwtModule],
   controllers: [UsersController],
   providers: [UsersService],
   exports:[UsersService, TypeOrmModule]

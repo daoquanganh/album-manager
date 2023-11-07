@@ -1,6 +1,7 @@
 import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./user.entity";
 import { Photo } from "./photo.entity";
+import { IsNotEmpty } from "class-validator";
 
 @Entity()
 export class Comment extends BaseEntity {
@@ -8,14 +9,17 @@ export class Comment extends BaseEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string
 
+    @IsNotEmpty()
     @Column()
-    userId: number
+    userId: string
 
+    @IsNotEmpty()
     @Column()
-    photoId: number
+    photoId: string
 
+    @IsNotEmpty()
     @Column()
-    content: number
+    content: string
 
     @ManyToOne(() => User, (user) => user.comments)
     user: User
