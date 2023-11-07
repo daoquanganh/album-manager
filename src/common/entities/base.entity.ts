@@ -1,8 +1,10 @@
+import { IsNotEmpty } from 'class-validator';
 import { Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 export class BaseEntity<T extends string> {
 
-    @Column()
+    @IsNotEmpty()
+    @Column({default: ''})
     name: string;
 
     @CreateDateColumn({ name: 'created_at', type: 'timestamp' })

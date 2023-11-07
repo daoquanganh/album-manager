@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Put, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Put, ParseIntPipe, Req, HttpException, HttpStatus } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import { CreateUserDto } from '../../common/dtos/users/create-user.dto';
 import { UpdateUserDto } from '../../common/dtos/users/update-user.dto';
@@ -27,22 +27,38 @@ export class UsersController {
   
   @UseGuards(AuthGuard)
   @Patch('update/:id')
-  async updateUserInfo(@Param('id', ParseIntPipe) id: number, @Body() data: UpdateUserDto) {
+  async updateUserInfo(@Param('id') id: string, @Body() data: UpdateUserDto) {
     return await this.usersService.updateUser(id, data)
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    // return this.usersService.findOne(+id);
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   // return this.usersService.findOne(+id);
+  // }
+
+  @UseGuards(AuthGuard)
+  @Post('follow')
+  async followUser(@Req() req:any, @Body() followingId: string ) {
+    const followerId = req.user.data.id
+    if (!followerId) throw new HttpException('Cant extract userId from token', HttpStatus.BAD_REQUEST)
+    return await this.usersService.follow(followerId, followingId)
   }
 
-  // @Post('follow')
-  // async followUser()
+  @UseGuards(AuthGuard)
+  @Post('like')
+  async likePhoto(@Req() req:any, @Body() data: {photoId: string} ) {
+    const userId = req.user.data.id
+    if (!userId) throw new HttpException('Cant extract userId from token', HttpStatus.BAD_REQUEST)
+    return await this.usersService.likePhoto(userId, data.photoId)
+  }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-  //   return this.usersService.update(+id, updateUserDto);
-  // }
+  @UseGuards(AuthGuard)
+  @Get('newsfeed')
+  async getNewsfeed(@Req() req:any) {
+    const userId = req.user.data.id
+    if (!userId) throw new HttpException('Cant extract userId from token', HttpStatus.BAD_REQUEST)
+    return await this.usersService.getNewsfeed(userId)
+  }
 
   // @Delete(':id')
   // remove(@Param('id') id: string) {

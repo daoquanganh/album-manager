@@ -7,7 +7,7 @@ import { Photo } from "./photo.entity";
 export class Album extends BaseEntity<MediaStatus> {
 
     @PrimaryGeneratedColumn('uuid')
-    id: number
+    id: string
 
     @Column()
     description: string
