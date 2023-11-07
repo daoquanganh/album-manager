@@ -98,8 +98,21 @@ export class UsersService {
       })
     }
     return Promise.all([this.userRepo.save(user), this.photoRepo.save(photo)])
+  }
 
-
+  async getNewsfeed(userId: string) {
+    const user = await this.userRepo.findOne({
+      where: {id: userId},
+      relations: ['followings', 'followings.photos']
+    })
+    if (!user) throw new HttpException('User not found', HttpStatus.BAD_REQUEST)
+    const data =[]
+    user.followings.forEach((following) => {
+      following.photos.forEach((photo) => {
+        data.push(photo)
+      })
+    })
+    return data
   }
   remove(id: number) {
     return `This action removes a #${id} user`;

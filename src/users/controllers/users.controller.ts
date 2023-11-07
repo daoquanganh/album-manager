@@ -31,10 +31,10 @@ export class UsersController {
     return await this.usersService.updateUser(id, data)
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    // return this.usersService.findOne(+id);
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   // return this.usersService.findOne(+id);
+  // }
 
   @UseGuards(AuthGuard)
   @Post('follow')
@@ -50,6 +50,14 @@ export class UsersController {
     const userId = req.user.data.id
     if (!userId) throw new HttpException('Cant extract userId from token', HttpStatus.BAD_REQUEST)
     return await this.usersService.likePhoto(userId, data.photoId)
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('newsfeed')
+  async getNewsfeed(@Req() req:any) {
+    const userId = req.user.data.id
+    if (!userId) throw new HttpException('Cant extract userId from token', HttpStatus.BAD_REQUEST)
+    return await this.usersService.getNewsfeed(userId)
   }
 
   // @Delete(':id')
