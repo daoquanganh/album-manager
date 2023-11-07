@@ -45,14 +45,14 @@ export class PhotosService {
     async deletePhoto(id: string) {
         let photo = await this.photoRepo.findOne({
             where: {id}, 
-            relations: {user:true}})
+            relations: {owner:true}})
         if (photo) {
             fs.unlink(photo.link, (err) => {
                 if (err) { 
                     console.log(err)
                 }
             })
-            photo.user.id = null
+            photo.owner.id = null
             return await this.photoRepo.remove(photo)
         } else { throw new HttpException('Photo not found', HttpStatus.BAD_REQUEST) }
 

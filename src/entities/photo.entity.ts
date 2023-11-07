@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { BaseEntity } from "src/common/entities/base.entity";
 import { User } from "./user.entity";
 import { MediaStatus } from "src/common/types/enum.type";
@@ -29,8 +29,9 @@ export class Photo extends BaseEntity<MediaStatus> {
     like: number
 
     @ManyToOne(() => User, (user) => user.photos)
-    user: User
+    owner: User
 
     @ManyToOne(() => Album, (album) => album.photos)
     album: Album
+
 }

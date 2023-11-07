@@ -6,11 +6,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt'
 import { ForgetPasswordDto } from 'src/common/dtos/users/forget-password.dto';
+import { Photo } from 'src/entities/photo.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private userRepo: Repository<User>,
+    @InjectRepository(Photo) private photoRepo: Repository<Photo>
   ) {}
   async create(data: CreateUserDto)  {
     return await this.userRepo.save(data)
@@ -72,6 +74,32 @@ export class UsersService {
     if (!following) throw new HttpException('Following user not found', HttpStatus.BAD_REQUEST)
     follower.followings.push(following)
     return this.userRepo.save(follower)
+  }
+
+  async likePhoto(userId: string, photoId: string) {
+    const photo = await this.photoRepo.findOne({where: {id:photoId}})
+    if (!photo) throw new HttpException('Photo not found', HttpStatus.BAD_REQUEST)
+    let user = await this.userRepo.findOne({
+      where: {id:userId},
+      relations: {likedPhotos:true}  
+    })
+    if (!user) throw new HttpException('User not found', HttpStatus.BAD_REQUEST)
+    const result = (user.likedPhotos).filter((element) => {
+      return element.id == photoId
+    })
+    console.log(result)
+    if (!result) {
+      user.likedPhotos.push(photo)
+      photo.like++
+    } else {
+      photo.like--
+      user.likedPhotos = user.likedPhotos.filter((likedPhoto) => {
+        return likedPhoto.id !== photo.id
+      })
+    }
+    return Promise.all([this.userRepo.save(user), this.photoRepo.save(photo)])
+
+
   }
   remove(id: number) {
     return `This action removes a #${id} user`;

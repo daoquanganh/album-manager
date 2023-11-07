@@ -44,7 +44,7 @@ export class User extends BaseEntity<UserStatus> {
     @JoinColumn({'name': 'followers', 'referencedColumnName': 'followerId'})
     albums: Album[]
 
-    @OneToMany(() => Photo, (photo) => photo.user)
+    @OneToMany(() => Photo, (photo) => photo.owner)
     photos: Photo[]
 
     @OneToMany(() => Comment, (comment) => comment.user)
@@ -65,4 +65,8 @@ export class User extends BaseEntity<UserStatus> {
 
     @ManyToMany(() => User, (user) => user.followers)
     followings: User[];
+
+    @ManyToMany(() => Photo)
+    @JoinTable()
+    likedPhotos: Photo[]
 }

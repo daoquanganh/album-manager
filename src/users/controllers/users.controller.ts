@@ -38,16 +38,19 @@ export class UsersController {
 
   @UseGuards(AuthGuard)
   @Post('follow')
-  async followUser(@Req() req:any, @Body() data: {followingId: string} ) {
+  async followUser(@Req() req:any, @Body() followingId: string ) {
     const followerId = req.user.data.id
     if (!followerId) throw new HttpException('Cant extract userId from token', HttpStatus.BAD_REQUEST)
-    return await this.usersService.follow(followerId, data.followingId)
+    return await this.usersService.follow(followerId, followingId)
   }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-  //   return this.usersService.update(+id, updateUserDto);
-  // }
+  @UseGuards(AuthGuard)
+  @Post('like')
+  async likePhoto(@Req() req:any, @Body() data: {photoId: string} ) {
+    const userId = req.user.data.id
+    if (!userId) throw new HttpException('Cant extract userId from token', HttpStatus.BAD_REQUEST)
+    return await this.usersService.likePhoto(userId, data.photoId)
+  }
 
   // @Delete(':id')
   // remove(@Param('id') id: string) {
