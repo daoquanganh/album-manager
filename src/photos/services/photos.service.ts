@@ -6,13 +6,15 @@ import { User } from 'src/entities/user.entity';
 import { MoreThan, MoreThanOrEqual, Raw, Repository } from 'typeorm';
 import * as fs from 'fs';
 import { QueryDto } from 'src/common/dtos/photos/query.dto';
+import { Album } from 'src/entities/album.entity';
 
 @Injectable()
 export class PhotosService {
 
     constructor(    
         @InjectRepository(User) private userRepo: Repository<User>,
-        @InjectRepository(Photo) private photoRepo: Repository<Photo>
+        @InjectRepository(Photo) private photoRepo: Repository<Photo>,
+        @InjectRepository(Album) private albumRepo: Repository<Album>
     ) {}
     async create(id: string, link: string, data: PhotoInfoDto) {
         const user = await this.userRepo.findOne({
@@ -72,5 +74,33 @@ export class PhotosService {
             }
         })
         return photos
+    }
+
+    async addPhotoToAlbum(userId: string, photoId:string, albumId: string) {
+        const photo = await this.photoRepo.findOne({
+            where: {id: photoId},
+            relations: {owner:true}     
+        })
+        if (!photo) throw new HttpException('Photo not found', HttpStatus.NOT_FOUND)
+        if (userId != photo.owner.id) throw new HttpException('You are not the owner of the photo', HttpStatus.FORBIDDEN)
+        
+        const album = await this.albumRepo.findOneBy({id: albumId})
+        if (!album) throw new HttpException('Album not found', HttpStatus.NOT_FOUND)
+        photo.album = album
+        await this.photoRepo.save(photo)
+        
+        const user = await this.userRepo.findOne({
+            where: {id: userId},
+            relations: {albums:true}
+        })
+        if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND)
+        const result = (user.albums).filter((element) => {
+            return element.id == albumId
+          })
+        if (result) {
+            return photo
+        }
+        user.albums.push(album)
+        return await this.userRepo.save(user)
     }
 }

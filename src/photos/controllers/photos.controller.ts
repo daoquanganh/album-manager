@@ -36,4 +36,10 @@ export class PhotosController {
     async pagination(@Param('page', ParseIntPipe) page: number, @Query() query: QueryDto) {
         return await this.photosService.pagination(page, query)
     }
+
+    @UseGuards(AuthGuard)
+    @Post('addPhotoToAlbum')
+    async addPhotoToAlbum(@Req() req: any, @Body() data: {photoId: string, albumId:string}){
+        return await this.photosService.addPhotoToAlbum(req.user.data.id, data.photoId, data.albumId)
+    }
 }

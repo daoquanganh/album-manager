@@ -7,12 +7,14 @@ import { PhotosService } from './services/photos.service';
 import { UsersModule } from 'src/users/users.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { MulterConfigService } from 'src/config/multer.config';
+import { AlbumsModule } from 'src/albums/albums.module';
 
 @Module({
     imports: [
       TypeOrmModule.forFeature([Photo]), 
       JwtModule, 
-      UsersModule, 
+      UsersModule,
+      AlbumsModule,
       MulterModule.registerAsync({
         useClass: MulterConfigService
     })],

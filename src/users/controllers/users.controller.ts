@@ -38,10 +38,10 @@ export class UsersController {
 
   @UseGuards(AuthGuard)
   @Post('follow')
-  async followUser(@Req() req:any, @Body() followingId: string ) {
+  async followUser(@Req() req:any, @Body() data: {followingId: string} ) {
     const followerId = req.user.data.id
     if (!followerId) throw new BadRequestException('Cant extract userId from token')
-    return await this.usersService.follow(followerId, followingId)
+    return await this.usersService.follow(followerId, data.followingId)
   }
 
   @UseGuards(AuthGuard)

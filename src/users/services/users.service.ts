@@ -73,9 +73,19 @@ export class UsersService {
       relations: {
         followings:true
       }})
-    let following = await this.findOneById(followingId)
+    let following = await this.userRepo.findOneBy({id:followingId})
     if (!following) throw new HttpException('Following user not found', HttpStatus.BAD_REQUEST)
-    follower.followings.push(following)
+    const result = (follower.followings).filter((element) => {
+      return element.id == followingId
+    })
+    console.log(result)
+    if (result.length != 0) {
+      follower.followings = follower.followings.filter((element) => {
+        return element.id != following.id
+      })
+    } else {
+      follower.followings.push(following)
+    }
     return this.userRepo.save(follower)
   }
 
@@ -91,7 +101,7 @@ export class UsersService {
       return element.id == photoId
     })
     console.log(result)
-    if (!result) {
+    if (result.length == 0) {
       user.likedPhotos.push(photo)
       photo.like++
     } else {
