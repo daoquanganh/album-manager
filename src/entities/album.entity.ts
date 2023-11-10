@@ -30,6 +30,8 @@ export class Album extends BaseEntity<MediaStatus> {
     @OneToMany(() => Photo, (photo) => photo.album)
     photos: Photo[]
 
-    @ManyToMany(() => User, (user) => user.albums)
+    @ManyToMany(() => User, (user) => user.albums, {
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE"})
     users: User[]
 }

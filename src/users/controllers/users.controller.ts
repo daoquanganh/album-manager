@@ -67,4 +67,16 @@ export class UsersController {
     if (!userId) throw new BadRequestException('Cant extract userId from token')
     return await this.usersService.comment({userId, ...data})
   }
+
+  @UseGuards(AuthGuard)
+  @Delete('delete')
+  async deleteUser(@Req() req: any) {
+      return await this.usersService.deleteUser(req.user.data.id)
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('joinAlbum')
+  async joinAlbum(@Req() req: any, @Body() data: {albumId: string}) {
+    return await this.usersService.joinAlbum(req.user.data.id, data.albumId)
+  }
 }

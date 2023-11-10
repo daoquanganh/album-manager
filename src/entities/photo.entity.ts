@@ -29,13 +29,19 @@ export class Photo extends BaseEntity<MediaStatus> {
     @Column({default: 0})
     like: number
 
-    @ManyToOne(() => User, (user) => user.photos)
+    @ManyToOne(() => User, (user) => user.photos, {
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE"
+    })
     owner: User
 
     @ManyToOne(() => Album, (album) => album.photos)
     album: Album
 
-    @OneToMany(() => Comment, (comment) => comment.photo)
+    @OneToMany(() => Comment, (comment) => comment.photo, {
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE"
+    })
     comments: Comment[]
 
 }

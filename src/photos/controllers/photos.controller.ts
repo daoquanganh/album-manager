@@ -13,7 +13,7 @@ export class PhotosController {
     @UseGuards(AuthGuard)
     @UseInterceptors(FileInterceptor('file'))
     async uploadFile(@Req() req: any, @UploadedFile(ParseFilePipe) file: Express.Multer.File, @Body() data: PhotoInfoDto) {
-        console.log(data)
+        console.log(file)
         return await this.photosService.create(req.user.data.id, file.path, data)
     }
 
@@ -23,13 +23,14 @@ export class PhotosController {
     }
 
     @Patch(':id')
-    async updatePhoto(@Param('id') id: string, @Body() data: PhotoInfoDto) {
-        return await this.photosService.updatePhoto(id, data)
+    async updatePhoto(@Req() req: any, @Param('id') id: string, @Body() data: PhotoInfoDto) {
+        return await this.photosService.updatePhoto(req.user.data.id, id, data)
     }
 
+    @UseGuards(AuthGuard)
     @Delete(':id')
-    async deletePhoto(@Param('id') id: string) {
-        return await this.photosService.deletePhoto(id)
+    async deletePhoto(@Req() req: any, @Param('id') id: string) {
+        return await this.photosService.deletePhoto(req.user.data.id, id)
     }
 
     @Get('page/:page')

@@ -34,9 +34,11 @@ export class PhotosService {
         return this.photoRepo.find({relations: {comments:true}})
     }
 
-    async updatePhoto(id: string, data: PhotoInfoDto) {
+    async updatePhoto(userId:string, id: string, data: PhotoInfoDto) {
         let photo = await this.photoRepo.findOneBy({id})
+
         if (photo) {
+            if (userId !== photo.owner.id) throw new HttpException('You are not the owner of this photo', HttpStatus.FORBIDDEN)
             photo.name = data.name
             photo.description = data.description
             photo.status = data.status
@@ -44,11 +46,11 @@ export class PhotosService {
         } else { throw new HttpException('Photo not found', HttpStatus.BAD_REQUEST) }
     }
     
-    async deletePhoto(id: string) {
+    async deletePhoto(userId: string, id: string) {
         let photo = await this.photoRepo.findOne({
             where: {id}, 
             relations: {owner:true}})
-        if (photo) {
+        if (photo && photo.owner.id == userId) {
             fs.unlink(photo.link, (err) => {
                 if (err) { 
                     console.log(err)

@@ -9,20 +9,23 @@ import { ForgetPasswordDto } from 'src/common/dtos/users/forget-password.dto';
 import { Photo } from 'src/entities/photo.entity';
 import { Comment } from 'src/entities/comment.entity';
 import { CommentDto } from 'src/common/dtos/users/comment.dto';
+import { Album } from 'src/entities/album.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private userRepo: Repository<User>,
     @InjectRepository(Photo) private photoRepo: Repository<Photo>,
-    @InjectRepository(Comment) private commentRepo: Repository<Comment>
+    @InjectRepository(Comment) private commentRepo: Repository<Comment>,
+    @InjectRepository(Album) private albumRepo: Repository<Album>,
+
   ) {}
   async create(data: CreateUserDto)  {
     return await this.userRepo.save(data)
   }
 
   async findAll() {
-    return await this.userRepo.find({relations:{followers:true,followings:true, photos:true}});
+    return await this.userRepo.find({relations:['followers','followings', 'photos', 'albums']});
   }
 
   async findOneByUsername(userName: string): Promise<User | undefined> {
@@ -130,4 +133,38 @@ export class UsersService {
   async comment(data: CommentDto) {
     return await this.commentRepo.save(data)
   }
+
+  async deleteUser(id: string) {
+    let user = await this.userRepo.findOne({
+      where: {id}
+    })
+    return await this.userRepo.remove(user)
+  }
+
+  async joinAlbum(userId:string, albumId: string) {
+    let user = await this.userRepo.findOne({
+      where: {id:userId}, 
+      relations: {albums:true}
+    })
+    let album = await this.albumRepo.findOne({
+      where: {id:albumId}
+    })
+    if (user && album) {
+      user.albums.push(album)
+      return await this.userRepo.save(user)
+    } else throw new HttpException('User or Album not found', HttpStatus.NOT_FOUND)
+
+  }
+  //   let photo = await this.photoRepo.findOne({
+  //     where: {id}, 
+  //     relations: {owner:true}})
+  // if (photo && photo.owner.id == userId) {
+  //     fs.unlink(photo.link, (err) => {
+  //         if (err) { 
+  //             console.log(err)
+  //         }
+  //     })
+  //     photo.owner.id = null
+  //     return await this.photoRepo.remove(photo)
+  // } else { throw new HttpException('Photo not found', HttpStatus.BAD_REQUEST) }
 }
