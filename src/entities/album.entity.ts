@@ -1,15 +1,13 @@
 import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { BaseEntity } from "src/common/entities/base.entity";
+import { CustomBaseEntity } from "src/common/base/base.entity";
 import { MediaStatus } from "src/common/types/enum.type";
 import { Photo } from "./photo.entity";
 import { IsNotEmpty } from "class-validator";
 import { User } from "./user.entity";
 
 @Entity()
-export class Album extends BaseEntity<MediaStatus> {
+export class Album extends CustomBaseEntity {
 
-    @PrimaryGeneratedColumn('uuid')
-    id: string
 
     @IsNotEmpty()
     @Column()

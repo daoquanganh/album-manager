@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { BaseEntity } from "src/common/entities/base.entity";
+import { CustomBaseEntity } from "src/common/base/base.entity";
 import { Album } from "./album.entity";
 import { Photo } from "./photo.entity";
 import { Comment } from "./comment.entity"
@@ -7,14 +7,7 @@ import { UserStatus } from "src/common/types/enum.type";
 import { IsEmail, IsNotEmpty } from "class-validator";
 
 @Entity()
-export class User extends BaseEntity<UserStatus> {
-
-    @PrimaryGeneratedColumn('uuid')
-    id: string
-
-    @IsNotEmpty()
-    @Column()
-    name: string
+export class User extends CustomBaseEntity {
 
     @IsNotEmpty()
     @Column({ unique: true })

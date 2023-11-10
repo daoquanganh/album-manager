@@ -1,19 +1,20 @@
 import { Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { BaseEntity } from "src/common/entities/base.entity";
+import { CustomBaseEntity } from "src/common/base/base.entity";
 import { User } from "./user.entity";
 import { MediaStatus } from "src/common/types/enum.type";
 import { Album } from "./album.entity";
 import { IsNotEmpty } from "class-validator";
 import { Comment } from "./comment.entity";
 @Entity()
-export class Photo extends BaseEntity<MediaStatus> {
-
-    @PrimaryGeneratedColumn('uuid')
-    id: string
+export class Photo extends CustomBaseEntity {
 
     @IsNotEmpty()
     @Column()
     description: string
+
+    @IsNotEmpty()
+    @Column()
+    link: string
 
     @Column({
         type: 'enum',
@@ -21,10 +22,6 @@ export class Photo extends BaseEntity<MediaStatus> {
         default: 'public',
     })
     status: MediaStatus
-
-    @IsNotEmpty()
-    @Column()
-    link: string
 
     @Column({default: 0})
     like: number
