@@ -5,14 +5,17 @@ import { Repository } from 'typeorm';
 import * as fs from 'fs';
 import { Album } from 'src/entities/album.entity';
 import { AlbumInfoDto } from 'src/common/dtos/albums/album-info.dto';
+import { BaseService } from 'src/common/base/base.service';
 
 @Injectable()
-export class AlbumsService {
+export class AlbumsService extends BaseService<Album> {
 
     constructor(    
         @InjectRepository(User) private userRepo: Repository<User>,
         @InjectRepository(Album) private albumRepo: Repository<Album>
-    ) {}
+    ) {
+        super(albumRepo);
+    }
     async create(id: string, link: string, data: AlbumInfoDto) {
         const user = await this.userRepo.findOne({
             where: {id}, 
@@ -25,10 +28,6 @@ export class AlbumsService {
         user.albums.push(albumInfo)
         await this.userRepo.save(user)
         return albumInfo
-    }
-
-    findAll() {
-        return this.albumRepo.find()
     }
 
     async updateAlbum(id: string, data: AlbumInfoDto) {

@@ -155,16 +155,4 @@ export class UsersService {
     } else throw new HttpException('User or Album not found', HttpStatus.NOT_FOUND)
 
   }
-  //   let photo = await this.photoRepo.findOne({
-  //     where: {id}, 
-  //     relations: {owner:true}})
-  // if (photo && photo.owner.id == userId) {
-  //     fs.unlink(photo.link, (err) => {
-  //         if (err) { 
-  //             console.log(err)
-  //         }
-  //     })
-  //     photo.owner.id = null
-  //     return await this.photoRepo.remove(photo)
-  // } else { throw new HttpException('Photo not found', HttpStatus.BAD_REQUEST) }
 }

@@ -12,6 +12,8 @@ import { AlbumsController } from './albums/controllers/albums.controller';
 import { AlbumsService } from './albums/services/albums.service';
 import { AlbumsModule } from './albums/albums.module';
 import { JwtModule } from '@nestjs/jwt';
+import { APP_FILTER } from '@nestjs/core';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 @Module({
   imports: [
@@ -28,9 +30,13 @@ import { JwtModule } from '@nestjs/jwt';
     AuthModule,
     PhotosModule,
     AlbumsModule,
-    JwtModule
+    JwtModule,
+    
   ],
   controllers: [AppController, AlbumsController],
-  providers: [AppService, AlbumsService],
+  providers: [AppService, AlbumsService,    {
+    provide: APP_FILTER,
+    useClass: HttpExceptionFilter,
+  }],
 })
 export class AppModule {}

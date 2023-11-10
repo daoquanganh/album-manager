@@ -1,3 +1,4 @@
+import { IsNotEmpty } from "class-validator"
 
 export class QueryDto {
 
@@ -6,5 +7,8 @@ export class QueryDto {
     filter: string = 'createdAt' || 'name'
 
     minLike: number = 0
+
+    @IsNotEmpty()
+    page: number
 
 }

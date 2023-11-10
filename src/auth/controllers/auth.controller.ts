@@ -4,7 +4,6 @@ import { UsersService } from 'src/users/services/users.service';
 import { VerifyUserDto } from 'src/common/dtos/users/verify-user.dto';
 import { LoginDto } from 'src/common/dtos/users/login.dto';
 import { AuthGuard } from '../guards/local-auth.guard';
-import * as bcrypt from 'bcrypt'
 import { UserInfoDto } from 'src/common/dtos/users/user-info.dto';
 
 @Controller('auth')
@@ -21,13 +20,7 @@ export class AuthController {
 
     @Post('register')
     async register(@Body() data: UserInfoDto) {
-        const duplicateUsername = await this.userService.findOneByUsername(data.userName)
-        const duplicateEmail = await this.userService.findOneByEmail(data.email)
-        if ( duplicateEmail ) throw new HttpException('Duplicated email', HttpStatus.BAD_REQUEST)
-        else if ( duplicateUsername ) throw new HttpException('Duplicated username', HttpStatus.BAD_REQUEST)
-        else {
-            return this.authService.register({status: 'unverified', ...data})
-        }
+        return this.authService.register({status: 'unverified', ...data})
     }
 
     @Post('verify')

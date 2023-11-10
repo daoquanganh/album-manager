@@ -20,7 +20,7 @@ export class AlbumsController {
     })}))
     async uploadFile(@Req() req: any, @UploadedFile() file: Express.Multer.File, @Body() data: AlbumInfoDto) {
         console.log(file)
-        return await this.albumsService.create(req.user.data.id, file.path, data)
+        return await this.albumsService.create(req.user.id, file.path, data)
     }
 
     @Get()

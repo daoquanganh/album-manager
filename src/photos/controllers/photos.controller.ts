@@ -12,9 +12,12 @@ export class PhotosController {
     @Post('upload')
     @UseGuards(AuthGuard)
     @UseInterceptors(FileInterceptor('file'))
-    async uploadFile(@Req() req: any, @UploadedFile(ParseFilePipe) file: Express.Multer.File, @Body() data: PhotoInfoDto) {
+    async uploadFile(
+        @Req() req: any, 
+        @UploadedFile(ParseFilePipe) file: Express.Multer.File, 
+        @Body() data: PhotoInfoDto) {
         console.log(file)
-        return await this.photosService.create(req.user.data.id, file.path, data)
+        return await this.photosService.create(req.user.id, file.path, data)
     }
 
     @Get()
@@ -24,23 +27,23 @@ export class PhotosController {
 
     @Patch(':id')
     async updatePhoto(@Req() req: any, @Param('id') id: string, @Body() data: PhotoInfoDto) {
-        return await this.photosService.updatePhoto(req.user.data.id, id, data)
+        return await this.photosService.updatePhoto(req.user.id, id, data)
     }
 
     @UseGuards(AuthGuard)
     @Delete(':id')
     async deletePhoto(@Req() req: any, @Param('id') id: string) {
-        return await this.photosService.deletePhoto(req.user.data.id, id)
+        return await this.photosService.deletePhoto(req.user.id, id)
     }
 
-    @Get('page/:page')
-    async pagination(@Param('page', ParseIntPipe) page: number, @Query() query: QueryDto) {
-        return await this.photosService.pagination(page, query)
+    @Get('pagination/')
+    async pagination(@Query() query: QueryDto) {
+        return await this.photosService.pagination(query)
     }
 
     @UseGuards(AuthGuard)
     @Post('addPhotoToAlbum')
     async addPhotoToAlbum(@Req() req: any, @Body() data: {photoId: string, albumId:string}){
-        return await this.photosService.addPhotoToAlbum(req.user.data.id, data.photoId, data.albumId)
+        return await this.photosService.addPhotoToAlbum(req.user.id, data.photoId, data.albumId)
     }
 }

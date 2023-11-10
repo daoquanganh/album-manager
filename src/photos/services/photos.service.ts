@@ -3,19 +3,22 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PhotoInfoDto } from 'src/common/dtos/photos/photo-info.dto';
 import { Photo } from 'src/entities/photo.entity';
 import { User } from 'src/entities/user.entity';
-import { MoreThan, MoreThanOrEqual, Raw, Repository } from 'typeorm';
+import { MoreThanOrEqual, Repository } from 'typeorm';
 import * as fs from 'fs';
 import { QueryDto } from 'src/common/dtos/photos/query.dto';
 import { Album } from 'src/entities/album.entity';
+import { BaseService } from 'src/common/base/base.service';
 
 @Injectable()
-export class PhotosService {
+export class PhotosService extends BaseService<Photo>{
 
     constructor(    
         @InjectRepository(User) private userRepo: Repository<User>,
         @InjectRepository(Photo) private photoRepo: Repository<Photo>,
         @InjectRepository(Album) private albumRepo: Repository<Album>
-    ) {}
+    ) {
+        super(photoRepo);
+    }
     async create(id: string, link: string, data: PhotoInfoDto) {
         const user = await this.userRepo.findOne({
             where: {id}, 
@@ -28,10 +31,6 @@ export class PhotosService {
         user.photos.push(photoInfo)
         await this.userRepo.save(user)
         return photoInfo
-    }
-
-    findAll() {
-        return this.photoRepo.find({relations: {comments:true}})
     }
 
     async updatePhoto(userId:string, id: string, data: PhotoInfoDto) {
@@ -61,12 +60,12 @@ export class PhotosService {
         } else { throw new HttpException('Photo not found', HttpStatus.BAD_REQUEST) }
     }
 
-    async pagination(page: number, query: QueryDto) {
+    async pagination(query: QueryDto) {
         const order = query.order || 'ASC'
         const filter = query.filter || 'createdAt'
         const minLike = query.minLike || 0
-        const photos = await this.photoRepo.find({
-            skip: 10*(page-1),
+        const [results, total] = await this.photoRepo.findAndCount({
+            skip: 10*(query.page-1),
             take: 10,
             order: {
                 [filter]: order === 'DESC' ? 'DESC' : 'ASC',
@@ -75,7 +74,7 @@ export class PhotosService {
                 like: MoreThanOrEqual(minLike)
             }
         })
-        return photos
+        return {data:results, total}
     }
 
     async addPhotoToAlbum(userId: string, photoId:string, albumId: string) {

@@ -16,7 +16,6 @@ export class AuthService {
   async validateUser(data: LoginDto): Promise<User> {
     let user = await this.usersService.findOneByEmail(data.login)
     if (!user) user = await this.usersService.findOneByUsername(data.login)
-    if (!user) { throw new HttpException('no credentials found with specified login', HttpStatus.BAD_REQUEST)}
     else if (user.status === 'unverified') { throw new HttpException('Account is not verified', HttpStatus.FORBIDDEN)}
 
     if (user && bcrypt.compare(user.password, await bcrypt.hash(data.password, 10))) {
@@ -27,13 +26,12 @@ export class AuthService {
   async login(user: User) {
     if (user){
       const payload = { 
-        data : {
           id: user.id, 
           email: user.email, 
-          name: user.name, 
+          name: user.name,
+          userName: user.userName,
           createdAt: user.createdAt, 
           updatedAt: user.updatedAt 
-        }
       }
       return {
         access_token: this.jwtService.sign(payload),
